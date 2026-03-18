@@ -9,6 +9,6 @@ public class Comptabilite {
         this.comptabilite = pComptabilite;
     }
     public void traite(String contenu) {
-        System.out.println("comptabilité:" + contenu.toString().toLowerCase());
+        System.out.println("comptabilite:" + contenu.toString().toLowerCase());
     }
 }
