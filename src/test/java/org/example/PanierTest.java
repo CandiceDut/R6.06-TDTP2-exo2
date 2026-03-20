@@ -44,8 +44,7 @@ class PanierTest {
         panier.declencherCommande();
 
         //THEN
-        assertThat(outputStreamCaptor.toString()).isEqualTo("G.DES.STOCKS:STOCK");
-        assertThat(outputStreamCaptor.toString()).isEqualTo("comptabilite:compta");
+        assertThat(outputStreamCaptor.toString()).isEqualTo("G.DES.STOCKS:CONTENU DU PANIER" + System.lineSeparator() + "comptabilite:contenu du panier" + System.lineSeparator());
     }
 
     @AfterEach

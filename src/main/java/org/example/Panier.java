@@ -1,10 +1,13 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.Observable;
+
 public class Panier {
     private GestionDeStock stock;
     private Comptabilite compta;
     private String contenu;
+    private DeclenchementCommande sujet = new DeclenchementCommande();
 
     public Panier (GestionDeStock pStock, Comptabilite pCompta) {
         this.stock = pStock;
@@ -17,7 +20,25 @@ public class Panier {
     };
 
     public void declencherCommande() {
-        this.stock.traite(this.contenu);
-        this.compta.traite(this.contenu);
+        /*this.stock.traite(contenu);
+        this.compta.traite(contenu);*/
+        this.sujet.notifyObservers(contenu);
+    }
+
+    public class DeclenchementCommande extends Observable {
+        public void notifyObservers(){
+            super.addObserver(compta);
+            super.addObserver(stock);
+            this.setChanged();
+            super.notifyObservers();
+        }
+        public void notifyObservers(Object pObject){
+            super.addObserver(compta);
+            super.addObserver(stock);
+            this.setChanged();
+            super.notifyObservers(pObject);
+        }
+
+        public void setChanged(){ super.setChanged();}
     }
 }
