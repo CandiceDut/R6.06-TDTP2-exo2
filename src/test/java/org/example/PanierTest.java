@@ -1,28 +1,25 @@
 package org.example;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.util.Observable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 class PanierTest {
 
     private Panier panier;
-    private final PrintStream standardOut = System.out;
-    private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+    private GestionDeStock stock;
+    private Comptabilite compta;
 
     @BeforeEach
     void setUp() {
-        GestionDeStock stock = new GestionDeStock("stock");
-        Comptabilite compta = new Comptabilite("Compta");
+        stock = mock(GestionDeStock.class);
+        compta = mock(Comptabilite.class);
         panier = new Panier(stock, compta);
-        System.setOut(new PrintStream(outputStreamCaptor));
-        outputStreamCaptor.reset();
     }
 
     @Test
@@ -37,18 +34,18 @@ class PanierTest {
     }
 
     @Test
-    void should_return_gestion_stock_and_compta_when_declencherCommande() {
+    void should_notify_observateurs_compta_and_stock_when_declencher_commande() {
         //GIVEN
+        Panier.DeclenchementCommande sujet = panier.new DeclenchementCommande();
 
         //WHEN
-        panier.declencherCommande();
+        sujet.addObserver(compta);
+        sujet.addObserver(stock);
+        sujet.setChanged();
+        sujet.notifyObservers(panier.getContenu());
 
         //THEN
-        assertThat(outputStreamCaptor.toString()).isEqualTo("G.DES.STOCKS:CONTENU DU PANIER" + System.lineSeparator() + "comptabilite:contenu du panier" + System.lineSeparator());
-    }
-
-    @AfterEach
-    public void tearDown() {
-        System.setOut(standardOut);
+        verify(compta, times(1)).update(any(Observable.class), eq("Contenu du Panier"));
+        verify(stock, times(1)).update(any(Observable.class), eq("Contenu du Panier"));
     }
 }
